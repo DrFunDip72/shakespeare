@@ -94,7 +94,7 @@
     </div>
 
     <div id="winMessage">
-      <h2 id="winText" class="dramatic-enter">You have earned thyself another piece of the puzzle:</h2>
+      <h2 id="winText"></h2>
       <button onclick="revealPiece()">Unveil what thou hast won</button>
       <div id="puzzlePiece" style="margin-top: 1rem; font-size: 2rem; display: none;"><strong>372</strong></div>
       <button onclick="restartGame()">Wouldst thou play again?</button>
@@ -108,19 +108,13 @@
     let usedHint = false;
 
     async function startGame() {
-  const res = fetch('riddles.json')
-    .then(res => res.json())
-    .then(data => {
-      riddles = data;
+      const res = await fetch('riddles.json');
+      riddles = await res.json();
       document.querySelector('h1').style.display = 'none';
-      document.querySelector('button[onclick="startGame()"]')?.style.display = 'none';
+      document.querySelector('button').style.display = 'none';
       document.getElementById('game').style.display = 'block';
       nextRiddle();
-    })
-    .catch(err => {
-      console.error('Error loading riddles:', err);
-    });
-}
+    }
 
     function normalize(str) {
       return str.toLowerCase().replace(/[^a-z0-9]/gi, '').trim();
@@ -140,7 +134,7 @@
 
       const randomIndex = Math.floor(Math.random() * riddles.length);
       currentRiddle = riddles[randomIndex];
-      riddles.splice(randomIndex, 1); // remove from list
+      riddles.splice(randomIndex, 1);
       document.getElementById('riddle').innerText = currentRiddle.riddle;
       updatePoints();
     }
@@ -160,6 +154,7 @@
         if (score >= 40) {
           document.getElementById('game').style.display = 'none';
           document.getElementById('winMessage').style.display = 'block';
+          typeWinMessage("You have earned thyself another piece of the puzzle:");
         } else {
           setTimeout(nextRiddle, 1500);
         }
@@ -169,6 +164,17 @@
         feedback.innerText = 'Nay, that answer appeareth false.';
       }
       updatePoints();
+    }
+
+    function typeWinMessage(text) {
+      const winText = document.getElementById('winText');
+      winText.innerText = '';
+      let i = 0;
+      const interval = setInterval(() => {
+        winText.innerText += text.charAt(i);
+        i++;
+        if (i >= text.length) clearInterval(interval);
+      }, 60);
     }
 
     function showHint() {
