@@ -47,9 +47,15 @@
       margin-top: 1rem;
     }
     #answerInput {
-      margin-bottom: 1rem;
+      margin: 1rem 0;
       padding: 0.5rem;
       font-family: 'Georgia', serif;
+    }
+    #hintBox {
+      margin: 1rem 0;
+      font-style: italic;
+      border: 1px dashed white;
+      padding: 0.5rem 1rem;
     }
     .fade {
       animation: fadein 1s;
@@ -143,6 +149,7 @@
     function showHint() {
       const hintBox = document.getElementById('hintBox');
       hintBox.innerText = `Hint: ${currentRiddle.hint}`;
+      hintBox.style.display = 'block';
       usedHint = true;
     }
 
