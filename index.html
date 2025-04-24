@@ -151,7 +151,7 @@
         score += Math.max(earned, 1);
         feedback.innerText = 'Thou art correct!';
         playSound();
-        if (score >= 40) {
+        if (score >= 5) {
           document.getElementById('game').style.display = 'none';
           document.getElementById('winMessage').style.display = 'block';
           typeWinMessage("You have earned thyself another piece of the puzzle:");
@@ -167,14 +167,29 @@
     }
 
     function typeWinMessage(text) {
-      const winText = document.getElementById('winText');
-      winText.innerText = '';
-      let i = 0;
-      const interval = setInterval(() => {
-        winText.innerText += text.charAt(i);
+  const winText = document.getElementById('winText');
+  winText.innerHTML = '';
+  const words = text.split(' ');
+  let i = 0;
+
+  function typeNextWord() {
+    if (i < words.length) {
+      const span = document.createElement('span');
+      span.style.opacity = 0;
+      span.style.transition = 'opacity 0.5s';
+      span.textContent = words[i] + ' ';
+      winText.appendChild(span);
+
+      setTimeout(() => {
+        span.style.opacity = 1;
         i++;
-        if (i >= text.length) clearInterval(interval);
-      }, 60);
+        typeNextWord();
+      }, 300);
+    }
+  }
+
+  typeNextWord();
+}, 60);
     }
 
     function showHint() {
