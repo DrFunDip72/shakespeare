@@ -108,13 +108,19 @@
     let usedHint = false;
 
     async function startGame() {
-      const res = await fetch('riddles.json');
-      riddles = await res.json();
+  const res = fetch('riddles.json')
+    .then(res => res.json())
+    .then(data => {
+      riddles = data;
       document.querySelector('h1').style.display = 'none';
-      document.querySelector('button').style.display = 'none';
+      document.querySelector('button[onclick="startGame()"]')?.style.display = 'none';
       document.getElementById('game').style.display = 'block';
       nextRiddle();
-    }
+    })
+    .catch(err => {
+      console.error('Error loading riddles:', err);
+    });
+}
 
     function normalize(str) {
       return str.toLowerCase().replace(/[^a-z0-9]/gi, '').trim();
