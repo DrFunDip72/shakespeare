@@ -9,11 +9,20 @@
       background-color: black;
       color: white;
       font-family: 'Georgia', serif;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #container {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       text-align: center;
+      width: 100%;
+      max-width: 800px;
       padding: 2rem;
     }
     #game, #winMessage, #hintBox {
@@ -37,6 +46,11 @@
     #points {
       margin-top: 1rem;
     }
+    #answerInput {
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      font-family: 'Georgia', serif;
+    }
     .fade {
       animation: fadein 1s;
     }
@@ -47,25 +61,27 @@
   </style>
 </head>
 <body>
-  <h1>Art thou prepared, my fair lady?</h1>
-  <button onclick="startGame()">Aye, let us begin</button>
+  <div id="container">
+    <h1>Art thou prepared, my fair lady?</h1>
+    <button onclick="startGame()">Aye, let us begin</button>
 
-  <div id="game">
-    <h2 id="riddle" class="fade"></h2>
-    <input type="text" id="answerInput" placeholder="Thy answer, milady...">
-    <div>
-      <button onclick="submitAnswer()">Submit Thy Answer</button>
-      <button onclick="showHint()">Revealeth a Hint</button>
-      <button onclick="nextRiddle()">Another Riddle, I pray</button>
+    <div id="game">
+      <h2 id="riddle" class="fade"></h2>
+      <input type="text" id="answerInput" placeholder="Thy answer, milady...">
+      <div>
+        <button onclick="submitAnswer()">Submit Thy Answer</button>
+        <button onclick="showHint()">Revealeth a Hint</button>
+        <button onclick="nextRiddle()">Another Riddle, I pray</button>
+      </div>
+      <div id="hintBox"></div>
+      <div id="points">Points: 0 | Points needed to win: 50</div>
+      <div id="feedback"></div>
     </div>
-    <div id="hintBox"></div>
-    <div id="points">Points: 0 | Points needed to win: 50</div>
-    <div id="feedback"></div>
-  </div>
 
-  <div id="winMessage">
-    <h2>You have earned thyself another piece of the puzzle: <strong>372</strong></h2>
-    <button onclick="restartGame()">Wouldst thou play again?</button>
+    <div id="winMessage">
+      <h2>You have earned thyself another piece of the puzzle: <strong>372</strong></h2>
+      <button onclick="restartGame()">Wouldst thou play again?</button>
+    </div>
   </div>
 
   <script>
@@ -125,7 +141,8 @@
     }
 
     function showHint() {
-      document.getElementById('hintBox').innerText = `Hint: ${currentRiddle.hint}`;
+      const hintBox = document.getElementById('hintBox');
+      hintBox.innerText = `Hint: ${currentRiddle.hint}`;
       usedHint = true;
     }
 
