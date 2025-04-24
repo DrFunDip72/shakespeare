@@ -25,9 +25,16 @@
       max-width: 800px;
       padding: 2rem;
     }
-    #game, #winMessage, #hintBox {
+    #game, #winMessage {
       display: none;
       margin-top: 2rem;
+    }
+    #hintBox {
+      display: none;
+      margin: 1rem 0;
+      font-style: italic;
+      border: 1px dashed white;
+      padding: 0.5rem 1rem;
     }
     button {
       background-color: transparent;
@@ -50,12 +57,6 @@
       margin: 1rem 0;
       padding: 0.5rem;
       font-family: 'Georgia', serif;
-    }
-    #hintBox {
-      margin: 1rem 0;
-      font-style: italic;
-      border: 1px dashed white;
-      padding: 0.5rem 1rem;
     }
     .fade {
       animation: fadein 1s;
@@ -80,7 +81,7 @@
         <button onclick="nextRiddle()">Another Riddle, I pray</button>
       </div>
       <div id="hintBox"></div>
-      <div id="points">Points: 0 | Points needed to win: 50</div>
+      <div id="points">Points: 0 | Points needed to win: 40</div>
       <div id="feedback"></div>
     </div>
 
@@ -110,12 +111,20 @@
     }
 
     function nextRiddle() {
-      if (currentRiddle && !usedHint) score = Math.max(score - 1, 0);
       document.getElementById('hintBox').innerText = '';
+      document.getElementById('hintBox').style.display = 'none';
       document.getElementById('answerInput').value = '';
       document.getElementById('feedback').innerText = '';
       usedHint = false;
-      currentRiddle = riddles[Math.floor(Math.random() * riddles.length)];
+
+      if (riddles.length === 0) {
+        document.getElementById('riddle').innerText = 'Thou hast answered all that I could muster!';
+        return;
+      }
+
+      const randomIndex = Math.floor(Math.random() * riddles.length);
+      currentRiddle = riddles[randomIndex];
+      riddles.splice(randomIndex, 1); // remove from list
       document.getElementById('riddle').innerText = currentRiddle.riddle;
       updatePoints();
     }
@@ -132,7 +141,7 @@
         score += Math.max(earned, 1);
         feedback.innerText = 'Thou art correct!';
         playSound();
-        if (score >= 50) {
+        if (score >= 40) {
           document.getElementById('game').style.display = 'none';
           document.getElementById('winMessage').style.display = 'block';
         } else {
@@ -154,14 +163,14 @@
     }
 
     function updatePoints() {
-      document.getElementById('points').innerText = `Points: ${score} | Points needed to win: 50`;
+      document.getElementById('points').innerText = `Points: ${score} | Points needed to win: 40`;
     }
 
     function restartGame() {
       score = 0;
       document.getElementById('winMessage').style.display = 'none';
       document.getElementById('game').style.display = 'block';
-      nextRiddle();
+      startGame();
     }
 
     function playSound() {
