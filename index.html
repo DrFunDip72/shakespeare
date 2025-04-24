@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shakespearean Riddle Quest</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: 'Georgia', serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+    #game, #winMessage, #hintBox {
+      display: none;
+      margin-top: 2rem;
+    }
+    button {
+      background-color: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 0.5rem 1rem;
+      margin: 0.5rem;
+      cursor: pointer;
+      font-size: 1rem;
+      font-family: 'Georgia', serif;
+    }
+    button:hover {
+      background-color: white;
+      color: black;
+    }
+    #points {
+      margin-top: 1rem;
+    }
+    .fade {
+      animation: fadein 1s;
+    }
+    @keyframes fadein {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Art thou prepared, my fair lady?</h1>
+  <button onclick="startGame()">Aye, let us begin</button>
+
+  <div id="game">
+    <h2 id="riddle" class="fade"></h2>
+    <input type="text" id="answerInput" placeholder="Thy answer, milady...">
+    <div>
+      <button onclick="submitAnswer()">Submit Thy Answer</button>
+      <button onclick="showHint()">Revealeth a Hint</button>
+      <button onclick="nextRiddle()">Another Riddle, I pray</button>
+    </div>
+    <div id="hintBox"></div>
+    <div id="points">Points: 0 | Points needed to win: 50</div>
+    <div id="feedback"></div>
+  </div>
+
+  <div id="winMessage">
+    <h2>You have earned thyself another piece of the puzzle: <strong>372</strong></h2>
+    <button onclick="restartGame()">Wouldst thou play again?</button>
+  </div>
+
+  <script>
+    let riddles = [];
+    let currentRiddle = null;
+    let score = 0;
+    let usedHint = false;
+
+    async function startGame() {
+      const res = await fetch('riddles.json');
+      riddles = await res.json();
+      document.querySelector('h1').style.display = 'none';
+      document.querySelector('button').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      nextRiddle();
+    }
+
+    function normalize(str) {
+      return str.toLowerCase().replace(/[^a-z0-9]/gi, '').trim();
+    }
+
+    function nextRiddle() {
+      if (currentRiddle && !usedHint) score = Math.max(score - 1, 0);
+      document.getElementById('hintBox').innerText = '';
+      document.getElementById('answerInput').value = '';
+      document.getElementById('feedback').innerText = '';
+      usedHint = false;
+      currentRiddle = riddles[Math.floor(Math.random() * riddles.length)];
+      document.getElementById('riddle').innerText = currentRiddle.riddle;
+      updatePoints();
+    }
+
+    function submitAnswer() {
+      const userAnswer = normalize(document.getElementById('answerInput').value);
+      const correctAnswer = normalize(currentRiddle.answer);
+      const feedback = document.getElementById('feedback');
+
+      if (!userAnswer) return;
+
+      if (userAnswer === correctAnswer) {
+        let earned = usedHint ? currentRiddle.difficulty - 2 : currentRiddle.difficulty;
+        score += Math.max(earned, 1);
+        feedback.innerText = 'Thou art correct!';
+        playSound();
+        if (score >= 50) {
+          document.getElementById('game').style.display = 'none';
+          document.getElementById('winMessage').style.display = 'block';
+        } else {
+          setTimeout(nextRiddle, 1500);
+        }
+      } else if (correctAnswer.includes(userAnswer) || userAnswer.includes(correctAnswer)) {
+        feedback.innerText = 'A fair guess! Thou art close, but not quite.';
+      } else {
+        feedback.innerText = 'Nay, that answer appeareth false.';
+      }
+      updatePoints();
+    }
+
+    function showHint() {
+      document.getElementById('hintBox').innerText = `Hint: ${currentRiddle.hint}`;
+      usedHint = true;
+    }
+
+    function updatePoints() {
+      document.getElementById('points').innerText = `Points: ${score} | Points needed to win: 50`;
+    }
+
+    function restartGame() {
+      score = 0;
+      document.getElementById('winMessage').style.display = 'none';
+      document.getElementById('game').style.display = 'block';
+      nextRiddle();
+    }
+
+    function playSound() {
+      const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/03/15/audio_6c84cc7c69.mp3');
+      audio.play();
+    }
+  </script>
+</body>
+</html>
