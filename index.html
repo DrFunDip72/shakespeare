@@ -94,7 +94,7 @@
     </div>
 
     <div id="winMessage">
-      <h2 id="winText"></h2>
+      <h2 id="winText" class="dramatic-enter">You have earned thyself another piece of the puzzle:</h2>
       <button onclick="revealPiece()">Unveil what thou hast won</button>
       <div id="puzzlePiece" style="margin-top: 1rem; font-size: 2rem; display: none;"><strong>372</strong></div>
       <button onclick="restartGame()">Wouldst thou play again?</button>
@@ -134,7 +134,7 @@
 
       const randomIndex = Math.floor(Math.random() * riddles.length);
       currentRiddle = riddles[randomIndex];
-      riddles.splice(randomIndex, 1);
+      riddles.splice(randomIndex, 1); // remove from list
       document.getElementById('riddle').innerText = currentRiddle.riddle;
       updatePoints();
     }
@@ -151,10 +151,9 @@
         score += Math.max(earned, 1);
         feedback.innerText = 'Thou art correct!';
         playSound();
-        if (score >= 5) {
+        if (score >= 40) {
           document.getElementById('game').style.display = 'none';
           document.getElementById('winMessage').style.display = 'block';
-          typeWinMessage("You have earned thyself another piece of the puzzle:");
         } else {
           setTimeout(nextRiddle, 1500);
         }
@@ -164,32 +163,6 @@
         feedback.innerText = 'Nay, that answer appeareth false.';
       }
       updatePoints();
-    }
-
-    function typeWinMessage(text) {
-  const winText = document.getElementById('winText');
-  winText.innerHTML = '';
-  const words = text.split(' ');
-  let i = 0;
-
-  function typeNextWord() {
-    if (i < words.length) {
-      const span = document.createElement('span');
-      span.style.opacity = 0;
-      span.style.transition = 'opacity 0.5s';
-      span.textContent = words[i] + ' ';
-      winText.appendChild(span);
-
-      setTimeout(() => {
-        span.style.opacity = 1;
-        i++;
-        typeNextWord();
-      }, 300);
-    }
-  }
-
-  typeNextWord();
-}, 60);
     }
 
     function showHint() {
